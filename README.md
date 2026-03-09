@@ -8,14 +8,17 @@ This repository contains a robust multi-model machine learning architecture for 
 Provides robust temporal spatial mapping over vectors.
 
 [View CNN1D Architecture Diagram (Draw.io)](images/CNN1D_Architecture.drawio)
+![CNN1D Architecture](images/CNN1D_Architecture.png)
 
 ### 2. Long Short-Term Memory Network (LSTM)
 Utilizes sequence-gates to interpret biological data sequentially.
 [View LSTM Cell Architecture Diagram (Draw.io)](images/LSTM_Architecture.drawio)
+![LSTM Architecture](images/LSTM_Architecture.png)
 
 ### 3. Hybrid Convolutional LSTM (CNN+LSTM)
 A pipeline extracting feature dependencies via convolutions sequentially decoded via LSTMs.
 [View Hybrid CNN-LSTM Architecture Diagram (Draw.io)](images/CNN_LSTM_Architecture.drawio)
+![Hybrid CNN-LSTM Architecture](images/CNN_LSTM_Architecture.png)
 
 ## Research Features
 **Distribution Resampling / Augmentation**:
