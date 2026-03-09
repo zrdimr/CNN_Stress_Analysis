@@ -55,7 +55,12 @@ def build_dataloaders(config, model_type, balancing_strategy='none'):
     elif balancing_strategy == "adasyn":
         print(f"Applying ADASYN...")
         sampler = ADASYN(random_state=42)
-        X_train_scaled, y_train_enc = sampler.fit_resample(X_train_scaled, y_train_enc)
+        try:
+            X_train_scaled, y_train_enc = sampler.fit_resample(X_train_scaled, y_train_enc)
+        except RuntimeError as e:
+            print(f"ADASYN failed due to density constraints ({e}). Falling back to SMOTE...")
+            sampler_fallback = SMOTE(random_state=42)
+            X_train_scaled, y_train_enc = sampler_fallback.fit_resample(X_train_scaled, y_train_enc)
     else:
         print(f"No balancing applied...")
 
