@@ -1,0 +1,9 @@
+torch>=2.0.0
+scikit-learn
+pandas
+numpy
+tqdm
+matplotlib
+seaborn
+PyYAML
+imbalanced-learn

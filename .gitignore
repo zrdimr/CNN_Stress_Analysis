@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+env/
+# Data
+# NOTE: We keep tracked CSVs with LFS, ignore everything else if heavy
+# data/raw/
+# data/final/*.csv is tracked by git-lfs
+
+# macOS
+.DS_Store
+
+# IDEs
+.idea/
+.vscode/
+
+# Models & Reports
+# Ignore generated files locally as they will be re-generated in Actions
+models/saved_models/
+reports/
+source/
