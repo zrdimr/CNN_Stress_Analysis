@@ -80,9 +80,9 @@ def generate_professor_level_report(results, config):
     best_edge_model = df.loc[df['Edge_Score'].idxmax()]
 
     # ==========================
-    # Generate Markdown Report
+    # Generate Markdown Report (English)
     # ==========================
-    report_content = f"""# Professional AI Research Report: Stress Estimation via Heart Rate Variability
+    report_content_en = f"""# Professional AI Research Report: Stress Estimation via Heart Rate Variability
 
 ## 1. Dataset Normal Distribution for each dataset
 This analysis compares the raw baseline distribution versus the mathematically synthesized topologies mapping standard minority constraints using empirical augmentation rules. (KDE Feature Distributions)
@@ -139,10 +139,75 @@ By crossing Deep Learning spatial convolutions with temporal LSTM gating under t
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 """
     
+    # ==========================
+    # Generate Markdown Report (Indonesian)
+    # ==========================
+    report_content_id = f"""# Laporan Riset AI Profesional: Estimasi Stres via Heart Rate Variability
+
+## 1. Distribusi Normal untuk Masing-masing Dataset
+Analisis ini membandingkan distribusi baseline mentah dengan topologi sintesis matematis yang memetakan batasan minoritas standar menggunakan aturan augmentasi empiris. (Distribusi Fitur KDE)
+
+![Distribusi Normal Dataset (None)](dataset_dist_none.png)
+![Distribusi Normal Dataset (SMOTE)](dataset_dist_smote.png)
+![Distribusi Normal Dataset (ADASYN)](dataset_dist_adasyn.png)
+
+## 2. Analisis Dampak Arsitektur Umum (Dampak SMOTE dan ADASYN Terhadap F1-Score)
+Sebuah plot Box-and-Whisker menelusuri variasi logika harmonic mean yang mengisolasi batas antara ekstraksi fitur di bawah batasan ekualibrasi ekstrem:
+![Analisis Dampak F1](f1_impact_analysis.png)
+
+## 3. Akurasi Model Lintas Arsitektur (Dengan/Tanpa Balancing)
+Pemetaan akurasi menelusuri resistensi batas terhadap estimasi berlebihan (over-estimation) selama kondisi tergugah fisiologis (arousal).
+![Analisis Akurasi](accuracy_analysis.png)
+
+## 4. Waktu Pelatihan Lintas Arsitektur (Dengan/Tanpa Balancing)
+Kendala pelatihan mengevaluasi latensi back-propagation yang dipetakan pada iterasi standar:
+![Analisis Waktu Pelatihan](training_time_analysis.png)
+
+## 5. Bobot Model Lintas Arsitektur (Dengan/Tanpa Balancing)
+Komparasi ketat dari konstrain topologi RAM/Flash untuk menentukan viabilitas implementasi di lapangan:
+![Analisis Bobot Model](model_weight_analysis.png)
+
+## 6. Profil Confusion Matrix (Semua Arsitektur)
+Komparasi prediksi yang merepresentasikan Positif Palsu (False Positives) dan Negatif Palsu (False Negatives) terhadap batasan fisiologis yang mencakup seluruh iterasi.
+
+| Model Dasar | None (Imbalanced) | SMOTE | ADASYN (Proksi EnTDA) |
+|---|---|---|---|
+| **CNN1D** | <img src="confusion_matrix_cnn1d_none.png" width="300"/> | <img src="confusion_matrix_cnn1d_smote.png" width="300"/> | <img src="confusion_matrix_cnn1d_adasyn.png" width="300"/> |
+| **LSTM** | <img src="confusion_matrix_lstm_none.png" width="300"/> | <img src="confusion_matrix_lstm_smote.png" width="300"/> | <img src="confusion_matrix_lstm_adasyn.png" width="300"/> |
+| **CNN+LSTM** | <img src="confusion_matrix_cnn_lstm_none.png" width="300"/> | <img src="confusion_matrix_cnn_lstm_smote.png" width="300"/> | <img src="confusion_matrix_cnn_lstm_adasyn.png" width="300"/> |
+
+
+## 7. Temuan Empiris Utama
+1. Ketergantungan temporal (Logika LSTM) vs vektorisasi spasial (Logika CNN1D) menunjukkan diferensiasi penangkapan pola di dalam ukuran batas stres (stress metrics).
+2. Model yang tidak seimbang (Unbalanced) akan runtuh menuju ke populasi mayoritas, menyebabkan negatif palsu (false-negative) sintetis terhadap batas stres aktual.
+3. ADASYN dan SMOTE menghadirkan regularisasi yang substansial secara statistik terhadap pergeseran fitur (feature drift) pada area minoritas interupsi, dibuktikan eksplisit lewat pemetaan F1 Box Plots.
+
+## 8. Model Terbaik Untuk Agen Edge AI
+Algoritma heuristik yang memaksimalkan akurasi sambil menekan bobot memori interferensi beserta siklus training model mendeteksi arsitektur terbaik secara mutlak:
+**{best_edge_model['Base Model']} bersama balancing {best_edge_model['Balancing (EnTDA)']}**.
+- Skor F1: {best_edge_model['F1']:.4f}
+- Matrix Footprint: {best_edge_model['Model Weight Size (MB)']} MB
+- Backpropagation Time: {best_edge_model['Training Time']}
+
+## 9. Kesimpulan
+Dengan menggabungkan Konvolusi Spasial Deep Learning dan Gerbang Temporal LSTM melewati tahap re-sampling topologi (SMOTE/ADASYN), model membuktikan kemampuannya membangun sistem peredam (boundary mapper) tangguh untuk peramalan stres fisiologi real-world. Data empiris memperkuat bahwa topologi Edge AI *wajib* disuplai distribusi sintesis demi menahan keakuratan lapangan tanpa lupa masal (catastrophic forgetting), dienkapsulasi pada 3 Epoch secara absolut agar tidak terjebak overfitting.
+
+---
+## ANNEX: Matriks Riset Lengkap (Research Matrix)
+
+| Dataset | Jumlah Dataset | Balancing (EnTDA) | Positif Dataset | Negatif Dataset | Base Model | Architecture | Epoch | Training Time | Model Weight Size (MB) | Accuracy | Precision | Recall | F1 | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+"""
+    
     for _, r in df_matrix.iterrows():
-        report_content += f"| {r['Dataset']} | {r['Jumlah Dataset']} | {r['Balancing (EnTDA)']} | {r['Positif Dataset']} | {r['Negatif Dataset']} | {r['Base Model']} | {r['Architecture']} | {r['Epoch']} | {r['Training Time']} | {r['Model Weight Size (MB)']} | {r['Accuracy']:.4f} | {r['Precision']:.4f} | {r['Recall']:.4f} | {r['F1']:.4f} | {r['Status']} |\n"
+        row_str = f"| {r['Dataset']} | {r['Jumlah Dataset']} | {r['Balancing (EnTDA)']} | {r['Positif Dataset']} | {r['Negatif Dataset']} | {r['Base Model']} | {r['Architecture']} | {r['Epoch']} | {r['Training Time']} | {r['Model Weight Size (MB)']} | {r['Accuracy']:.4f} | {r['Precision']:.4f} | {r['Recall']:.4f} | {r['F1']:.4f} | {r['Status']} |\n"
+        report_content_en += row_str
+        report_content_id += row_str
     
-    with open(os.path.join(reports_dir, 'PROFESSIONAL_RESEARCH_REPORT.md'), 'w') as f:
-        f.write(report_content)
+    with open(os.path.join(reports_dir, 'PROFESSIONAL_RESEARCH_REPORT_EN.md'), 'w') as f:
+        f.write(report_content_en)
+        
+    with open(os.path.join(reports_dir, 'PROFESSIONAL_RESEARCH_REPORT_ID.md'), 'w') as f:
+        f.write(report_content_id)
     
-    print(f"Successfully generated Professor-Level Report at: {os.path.join(reports_dir, 'PROFESSIONAL_RESEARCH_REPORT.md')}")
+    print(f"Successfully generated dual-language Professor-Level Reports at: {reports_dir}")
