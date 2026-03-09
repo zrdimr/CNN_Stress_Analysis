@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2023-11-20T00:00:00.000Z" agent="Mozilla/5.0" version="22.1.2" type="device">
+  <diagram id="cnn1d_diagram" name="CNN1D Architecture">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Input Layer -->
+        <mxCell id="node_input" value="Input Layer&#10;Matrix fingerprints" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="320" width="80" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Conv1D 512 -->
+        <mxCell id="node_conv1" value="Conv1D layer&#10;Filter 512&#10;kernel 3" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="160" y="320" width="100" height="80" as="geometry" />
+        </mxCell>
+        <!-- Pool 1 -->
+        <mxCell id="node_pool1" value="Max Pooling" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="280" y="320" width="60" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Conv1D 256 -->
+        <mxCell id="node_conv2" value="Conv1D layer&#10;Filter 256&#10;kernel 3" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="360" y="320" width="100" height="80" as="geometry" />
+        </mxCell>
+        <!-- Pool 2 -->
+        <mxCell id="node_pool2" value="Max Pooling" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="480" y="320" width="60" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Conv1D 128 -->
+        <mxCell id="node_conv3" value="Conv1D layer&#10;Filter 128&#10;kernel 3" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="560" y="320" width="100" height="80" as="geometry" />
+        </mxCell>
+        <!-- Pool 3 -->
+        <mxCell id="node_pool3" value="Max Pooling" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="680" y="320" width="60" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Conv1D 64 -->
+        <mxCell id="node_conv4" value="Conv1D layer&#10;Filter 64&#10;kernel 3" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="760" y="320" width="100" height="80" as="geometry" />
+        </mxCell>
+        <!-- Pool 4 -->
+        <mxCell id="node_pool4" value="Max Pooling" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="880" y="320" width="60" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- MLP 1024 -->
+        <mxCell id="node_fc1" value="1024&#10;neurons&#10;(Dropout 0.5)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="980" y="300" width="80" height="120" as="geometry" />
+        </mxCell>
+        <!-- MLP 512 -->
+        <mxCell id="node_fc2" value="512&#10;neurons&#10;(Dropout 0.5)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="310" width="70" height="100" as="geometry" />
+        </mxCell>
+        <!-- MLP 256 -->
+        <mxCell id="node_fc3" value="256&#10;neurons" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="1170" y="320" width="60" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Output -->
+        <mxCell id="node_out" value="Output&#10;(Multi-class)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="1270" y="340" width="80" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Connections -->
+        <mxCell id="edge1" edge="1" parent="1" source="node_input" target="node_conv1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge2" edge="1" parent="1" source="node_conv1" target="node_pool1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge3" edge="1" parent="1" source="node_pool1" target="node_conv2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge4" edge="1" parent="1" source="node_conv2" target="node_pool2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge5" edge="1" parent="1" source="node_pool2" target="node_conv3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge6" edge="1" parent="1" source="node_conv3" target="node_pool3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge7" edge="1" parent="1" source="node_pool3" target="node_conv4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge8" edge="1" parent="1" source="node_conv4" target="node_pool4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge9" edge="1" parent="1" source="node_pool4" target="node_fc1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge10" edge="1" parent="1" source="node_fc1" target="node_fc2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge11" edge="1" parent="1" source="node_fc2" target="node_fc3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge12" edge="1" parent="1" source="node_fc3" target="node_out">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
