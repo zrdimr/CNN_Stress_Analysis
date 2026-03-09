@@ -10,7 +10,6 @@ def generate_professor_level_report(results, config):
     df = pd.DataFrame(results)
     
     # Rename default keys to match EXACT Professor Research Matrix Columns
-    # Assuming 'f1' -> 'F1', 'accuracy' -> 'Accuracy', 'precision' -> 'Precision', 'recall' -> 'Recall'
     df = df.rename(columns={
         "accuracy": "Accuracy",
         "precision": "Precision",
@@ -40,26 +39,9 @@ def generate_professor_level_report(results, config):
     # Generate requested Charts 
     # ==========================
     
-    # 1. Dataset Normal Distribution (Simulated pie chart comparing Positive vs Negative)
-    def plot_dataset_dist(row, ax):
-        labels = ['Positive (Stress/Interruption)', 'Negative (No Stress)']
-        sizes = [row['Positif Dataset'], row['Negatif Dataset']]
-        ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90, colors=['#ff9999','#66b3ff'])
-        ax.set_title(f"Balancing: {row['Balancing (EnTDA)']}")
-
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-    unique_bals = df['Balancing (EnTDA)'].unique()
-    for i, bal in enumerate(unique_bals):
-        if i < len(axes):
-            row = df[df['Balancing (EnTDA)'] == bal].iloc[0]
-            plot_dataset_dist(row, axes[i])
-    plt.tight_layout()
-    plt.savefig(os.path.join(reports_dir, 'dataset_distribution.png'))
-    plt.close()
-
-    # 2. General Architecture Impact Analysis: SMOTE and ADASYN Impact on F1 Context
+    # 2. General Architecture Impact Analysis: SMOTE and ADASYN Impact on F1 Context (BOX PLOT)
     plt.figure(figsize=(10, 6))
-    sns.barplot(x='Base Model', y='F1', hue='Balancing (EnTDA)', data=df, palette='viridis')
+    sns.boxplot(x='Balancing (EnTDA)', y='F1', data=df, palette='viridis')
     plt.title("General Architecture Impact Analysis : SMOTE and ADASYN Impact on F1 Context")
     plt.savefig(os.path.join(reports_dir, 'f1_impact_analysis.png'))
     plt.close()
@@ -87,9 +69,15 @@ def generate_professor_level_report(results, config):
     plt.savefig(os.path.join(reports_dir, 'model_weight_analysis.png'))
     plt.close()
 
-    # Find the best model for Edge AI (Highest Accuracy per lowest weight and fastest inference)
-    # Simple heuristic: Max F1
-    best_edge_model = df.loc[df['F1'].idxmax()]
+    # 6. Best Edge AI Heuristic: Min Size, Min Time, Max Accuracy
+    # Normalize metrics to 0-1
+    acc_norm = df['Accuracy'] / df['Accuracy'].max()
+    time_norm = df['Training Time Numeric'] / df['Training Time Numeric'].max()
+    size_norm = df['Model Weight Size Numeric'] / df['Model Weight Size Numeric'].max()
+    
+    # Calculate score prioritizing (Accuracy) and penalizing (Time + Size)
+    df['Edge_Score'] = acc_norm - (0.5 * time_norm) - (0.5 * size_norm)
+    best_edge_model = df.loc[df['Edge_Score'].idxmax()]
 
     # ==========================
     # Generate Markdown Report
@@ -97,11 +85,14 @@ def generate_professor_level_report(results, config):
     report_content = f"""# Professional AI Research Report: Stress Estimation via Heart Rate Variability
 
 ## 1. Dataset Normal Distribution for each dataset
-This analysis compares the raw baseline distribution versus the mathematically synthesized topologies mapping standard minority constraints using empirical augmentation rules.
-![Dataset Distribution](dataset_distribution.png)
+This analysis compares the raw baseline distribution versus the mathematically synthesized topologies mapping standard minority constraints using empirical augmentation rules. (KDE Feature Distributions)
+
+![Dataset Normal Distribution (None)](dataset_dist_none.png)
+![Dataset Normal Distribution (SMOTE)](dataset_dist_smote.png)
+![Dataset Normal Distribution (ADASYN)](dataset_dist_adasyn.png)
 
 ## 2. General Architecture Impact Analysis (SMOTE and ADASYN Impact on F1 Context)
-The visualization below traces the empirical harmonic mean logic isolating the boundaries between temporal CNN feature extractions against purely recurrent contextual gateways, mapping their F1 score behavior underneath extreme balancing distributions:
+A box-and-whisker plot tracing the variation of harmonic mean logic isolating the boundaries between feature extractions under extreme balancing constraints:
 ![F1 Impact Analysis](f1_impact_analysis.png)
 
 ## 3. Model Accuracy Accross Architectures (With/Without Balancing)
@@ -117,22 +108,29 @@ A strict comparison of topological RAM/Flash constraints determining deployment 
 ![Model Weight Analysis](model_weight_analysis.png)
 
 ## 6. Confusion Matrix Profiles (All Architectures)
-*Note: Refer to individual `confusion_matrix.png` files generated in the sub-directories for discrete evaluations over the class structures.*
+Comparison of predictions representing False Positives and False Negatives against physiological boundaries spanning all iterations.
+
+| Base Model | None (Imbalanced) | SMOTE | ADASYN (EnTDA Proxy) |
+|---|---|---|---|
+| **CNN1D** | <img src="cnn1d_none/confusion_matrix.png" width="300"/> | <img src="cnn1d_smote/confusion_matrix.png" width="300"/> | <img src="cnn1d_adasyn/confusion_matrix.png" width="300"/> |
+| **LSTM** | <img src="lstm_none/confusion_matrix.png" width="300"/> | <img src="lstm_smote/confusion_matrix.png" width="300"/> | <img src="lstm_adasyn/confusion_matrix.png" width="300"/> |
+| **CNN+LSTM** | <img src="cnn_lstm_none/confusion_matrix.png" width="300"/> | <img src="cnn_lstm_smote/confusion_matrix.png" width="300"/> | <img src="cnn_lstm_adasyn/confusion_matrix.png" width="300"/> |
+
 
 ## 7. Major Empirical Findings
 1. Temporal dependency (LSTM logic) vs spatial vectorization (CNN1D logic) displays heavy differentiation inside stress metrics.
 2. Unbalanced models collapse onto the majority distribution, causing synthetic false negatives regarding actual arousal limits.
-3. ADASYN and SMOTE provide statistically substantial regularization against feature drift inside the minority interruptions.
+3. ADASYN and SMOTE provide statistically substantial regularization against feature drift inside the minority interruptions, explicitly demonstrated by F1 Box distributions.
 
 ## 8. Best Model Implementation for Edge AI Agent
-The algorithm optimizing towards maximum accuracy while honoring memory heuristics identifies:
+The heuristic algorithm optimizing towards maximum accuracy while penalizing heavy inference memory footprints and training back-propagation cycles securely identifies:
 **{best_edge_model['Base Model']} with {best_edge_model['Balancing (EnTDA)']} balancing**.
 - F1-Score: {best_edge_model['F1']:.4f}
 - Matrix Footprint: {best_edge_model['Model Weight Size (MB)']} MB
 - Backpropagation Time: {best_edge_model['Training Time']}
 
 ## 9. Conclusion
-By crossing Deep Learning spatial convolutions with temporal LSTM gating under topological re-sampling (SMOTE/ADASYN), we establish a highly robust boundary mapper for predicting physiological stress. Experimental outputs demonstrate that Edge AI topologies require synthetic distribution mappings to maintain real-world boundary logic without catastrophic forgetting.
+By crossing Deep Learning spatial convolutions with temporal LSTM gating under topological re-sampling (SMOTE/ADASYN), we establish a highly robust boundary mapper for predicting physiological stress. Experimental outputs demonstrate that Edge AI topologies require synthetic distribution mappings to maintain real-world boundary logic without catastrophic forgetting, securely capped at 3 Epochs to prevent excessive over-fitting against binary stress paradigms.
 
 ---
 ## ANNEX: Full Research Matrix

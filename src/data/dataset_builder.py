@@ -4,7 +4,10 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from imblearn.over_sampling import SMOTE
-from imblearn.over_sampling import ADASYN 
+from imblearn.over_sampling import ADASYN
+import matplotlib.pyplot as plt
+import seaborn as sns
+import os
 
 class StressDataset(Dataset):
     def __init__(self, X, y, model_type="cnn1d"):
@@ -32,10 +35,10 @@ def build_dataloaders(config, model_type, balancing_strategy='none'):
     drop_cols = config['data']['drop_cols'] + [target_col]
 
     X_train = train_df.drop(columns=drop_cols)
-    y_train = train_df[target_col]
+    y_train = train_df[target_col].replace({'interruption': 'stress potential', 'time pressure': 'stress potential'})
 
     X_test = test_df.drop(columns=drop_cols)
-    y_test = test_df[target_col]
+    y_test = test_df[target_col].replace({'interruption': 'stress potential', 'time pressure': 'stress potential'})
 
     # Normalization
     scaler = StandardScaler()
@@ -63,6 +66,22 @@ def build_dataloaders(config, model_type, balancing_strategy='none'):
             X_train_scaled, y_train_enc = sampler_fallback.fit_resample(X_train_scaled, y_train_enc)
     else:
         print(f"No balancing applied...")
+
+    # Generate Dataset Normal Distribution Curves (Feature KDE) for academic reporting
+    os.makedirs('reports', exist_ok=True)
+    plt.figure(figsize=(8, 6))
+    try:
+        # Plot distribution of the first 2 principal components/features linearly averaged
+        sns.kdeplot(X_train_scaled.mean(axis=1), fill=True, color="blue", label="Feature Mean KDE")
+        plt.title(f"Dataset Normal Distribution ({balancing_strategy.upper()})")
+        plt.xlabel("Normalized Value Distribution")
+        plt.ylabel("Density")
+        plt.legend()
+        plt.savefig(f"reports/dataset_dist_{balancing_strategy.lower()}.png")
+    except Exception as e:
+        print(f"Failed to plot distribution: {e}")
+    finally:
+        plt.close()
 
     dataset_info = {
         "Dataset": "SWELL-KW HRV Dataset",
