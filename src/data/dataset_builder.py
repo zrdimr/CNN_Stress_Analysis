@@ -64,6 +64,13 @@ def build_dataloaders(config, model_type, balancing_strategy='none'):
     else:
         print(f"No balancing applied...")
 
+    dataset_info = {
+        "Dataset": "SWELL-KW HRV Dataset",
+        "Jumlah Dataset": len(X_train_scaled) + len(X_test_scaled),
+        "Negatif Dataset": int((y_train_enc == list(le.classes_).index("no stress")).sum() + (y_test_enc == list(le.classes_).index("no stress")).sum()),
+        "Positif Dataset": int((y_train_enc != list(le.classes_).index("no stress")).sum() + (y_test_enc != list(le.classes_).index("no stress")).sum())
+    }
+
     train_dataset = StressDataset(X_train_scaled, y_train_enc, model_type)
     test_dataset = StressDataset(X_test_scaled, y_test_enc, model_type)
 
@@ -80,4 +87,4 @@ def build_dataloaders(config, model_type, balancing_strategy='none'):
         num_workers=2
     )
 
-    return train_loader, test_loader, le.classes_, X_train_scaled.shape[1]
+    return train_loader, test_loader, le.classes_, X_train_scaled.shape[1], dataset_info

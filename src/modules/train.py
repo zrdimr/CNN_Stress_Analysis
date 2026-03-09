@@ -2,6 +2,7 @@ import os
 import torch
 import torch.nn as nn
 from tqdm import tqdm
+import time
 
 def train_model(model, train_loader, val_loader, config, run_name):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -17,6 +18,7 @@ def train_model(model, train_loader, val_loader, config, run_name):
     save_path = os.path.join(run_save_dir, 'best_model.pth')
 
     print(f"Starting training on {device} for {run_name}...")
+    start_time = time.time()
     for epoch in range(config['training']['epochs']):
         model.train()
         train_loss = 0.0
@@ -63,5 +65,7 @@ def train_model(model, train_loader, val_loader, config, run_name):
             best_val_loss = val_loss_avg
             torch.save(model.state_dict(), save_path)
             
-    print(f"=> Training complete. Best model saved to {save_path}")
-    return save_path
+    end_time = time.time()
+    train_time = end_time - start_time
+    print(f"=> Training complete. Best model saved to {save_path} in {train_time:.2f}s")
+    return save_path, train_time

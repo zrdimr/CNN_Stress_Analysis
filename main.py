@@ -17,16 +17,32 @@ def run_single_experiment(model_name, balancing, config):
     print(f"| Run: [{model_name}] | Balancing: [{balancing}] |")
     print(f"=======================================================")
     
-    train_loader, test_loader, classes, input_dim = build_dataloaders(config, model_name, balancing)
+    train_loader, test_loader, classes, input_dim, dataset_info = build_dataloaders(config, model_name, balancing)
     num_classes = len(classes)
     
     run_name = f"{model_name}_{balancing}"
     model = get_model(model_name, input_dim, num_classes, config)
     
-    best_model_path = train_model(model, train_loader, test_loader, config, run_name)
+    best_model_path, train_time = train_model(model, train_loader, test_loader, config, run_name)
+    
+    # Calculate Model Weight Size (MB)
+    model_size_mb = os.path.getsize(best_model_path) / (1024 * 1024)
     
     model.load_state_dict(torch.load(best_model_path))
     result_metrics = evaluate_model(model, test_loader, classes, config, run_name)
+    
+    # Merge additional metrics to results
+    result_metrics["Dataset"] = dataset_info["Dataset"]
+    result_metrics["Jumlah Dataset"] = dataset_info["Jumlah Dataset"]
+    result_metrics["Positif Dataset"] = dataset_info["Positif Dataset"]
+    result_metrics["Negatif Dataset"] = dataset_info["Negatif Dataset"]
+    result_metrics["Base Model"] = model_name.upper()
+    result_metrics["Architecture"] = model.__class__.__name__
+    result_metrics["Epoch"] = config['training']['epochs']
+    result_metrics["Training Time"] = f"{train_time:.2f}s"
+    result_metrics["Model Weight Size (MB)"] = f"{model_size_mb:.2f}"
+    result_metrics["Balancing (EnTDA)"] = balancing.upper()
+    result_metrics["Status"] = "Completed"
     
     # Save isolated results JSON for merging later in distributed CI/CD
     os.makedirs('reports', exist_ok=True)
