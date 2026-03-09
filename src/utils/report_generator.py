@@ -19,7 +19,7 @@ def generate_professor_level_report(results, config):
     
     # Select and order matching exactly the requested Research Matrix
     req_columns = [
-        "Dataset", "Jumlah Dataset", "Balancing (EnTDA)", "Positif Dataset", "Negatif Dataset", 
+        "Dataset", "Jumlah Dataset", "Balancing Methode", "Positif Dataset", "Negatif Dataset", 
         "Base Model", "Architecture", "Epoch", "Training Time", "Model Weight Size (MB)", 
         "Accuracy", "Precision", "Recall", "F1", "Status"
     ]
@@ -41,21 +41,21 @@ def generate_professor_level_report(results, config):
     
     # 2. General Architecture Impact Analysis: SMOTE and ADASYN Impact on F1 Context (BOX PLOT)
     plt.figure(figsize=(10, 6))
-    sns.boxplot(x='Balancing (EnTDA)', y='F1', data=df, palette='viridis')
+    sns.boxplot(x='Balancing Methode', y='F1', data=df, palette='viridis')
     plt.title("General Architecture Impact Analysis : SMOTE and ADASYN Impact on F1 Context")
     plt.savefig(os.path.join(reports_dir, 'f1_impact_analysis.png'))
     plt.close()
 
     # 3. Model Accuracy Across Architectures
     plt.figure(figsize=(10, 6))
-    sns.barplot(x='Base Model', y='Accuracy', hue='Balancing (EnTDA)', data=df, palette='magma')
+    sns.barplot(x='Base Model', y='Accuracy', hue='Balancing Methode', data=df, palette='magma')
     plt.title("Model Accuracy Across Architectures (With/Without Balancing)")
     plt.savefig(os.path.join(reports_dir, 'accuracy_analysis.png'))
     plt.close()
 
     # 4. Training Time Across Architectures
     plt.figure(figsize=(10, 6))
-    sns.barplot(x='Base Model', y='Training Time Numeric', hue='Balancing (EnTDA)', data=df, palette='coolwarm')
+    sns.barplot(x='Base Model', y='Training Time Numeric', hue='Balancing Methode', data=df, palette='coolwarm')
     plt.title("Training Time Across Architectures (With/Without Balancing) [Seconds]")
     plt.ylabel("Training Time (s)")
     plt.savefig(os.path.join(reports_dir, 'training_time_analysis.png'))
@@ -110,7 +110,7 @@ A strict comparison of topological RAM/Flash constraints determining deployment 
 ## 6. Confusion Matrix Profiles (All Architectures)
 Comparison of predictions representing False Positives and False Negatives against physiological boundaries spanning all iterations.
 
-| Base Model | None (Imbalanced) | SMOTE | ADASYN (EnTDA Proxy) |
+| Base Model | None (Imbalanced) | SMOTE | ADASYN |
 |---|---|---|---|
 | **CNN1D** | <img src="confusion_matrix_cnn1d_none.png" width="300"/> | <img src="confusion_matrix_cnn1d_smote.png" width="300"/> | <img src="confusion_matrix_cnn1d_adasyn.png" width="300"/> |
 | **LSTM** | <img src="confusion_matrix_lstm_none.png" width="300"/> | <img src="confusion_matrix_lstm_smote.png" width="300"/> | <img src="confusion_matrix_lstm_adasyn.png" width="300"/> |
@@ -124,7 +124,7 @@ Comparison of predictions representing False Positives and False Negatives again
 
 ## 8. Best Model Implementation for Edge AI Agent
 The heuristic algorithm optimizing towards maximum accuracy while penalizing heavy inference memory footprints and training back-propagation cycles securely identifies:
-**{best_edge_model['Base Model']} with {best_edge_model['Balancing (EnTDA)']} balancing**.
+**{best_edge_model['Base Model']} with {best_edge_model['Balancing Methode']} balancing**.
 - F1-Score: {best_edge_model['F1']:.4f}
 - Matrix Footprint: {best_edge_model['Model Weight Size (MB)']} MB
 - Backpropagation Time: {best_edge_model['Training Time']}
@@ -135,7 +135,7 @@ By crossing Deep Learning spatial convolutions with temporal LSTM gating under t
 ---
 ## ANNEX: Full Research Matrix
 
-| Dataset | Jumlah Dataset | Balancing (EnTDA) | Positif Dataset | Negatif Dataset | Base Model | Architecture | Epoch | Training Time | Model Weight Size (MB) | Accuracy | Precision | Recall | F1 | Status |
+| Dataset | Jumlah Dataset | Balancing Methode | Positif Dataset | Negatif Dataset | Base Model | Architecture | Epoch | Training Time | Model Weight Size (MB) | Accuracy | Precision | Recall | F1 | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 """
     
@@ -170,7 +170,7 @@ Komparasi ketat dari konstrain topologi RAM/Flash untuk menentukan viabilitas im
 ## 6. Profil Confusion Matrix (Semua Arsitektur)
 Komparasi prediksi yang merepresentasikan Positif Palsu (False Positives) dan Negatif Palsu (False Negatives) terhadap batasan fisiologis yang mencakup seluruh iterasi.
 
-| Model Dasar | None (Imbalanced) | SMOTE | ADASYN (Proksi EnTDA) |
+| Model Dasar | None (Imbalanced) | SMOTE | ADASYN |
 |---|---|---|---|
 | **CNN1D** | <img src="confusion_matrix_cnn1d_none.png" width="300"/> | <img src="confusion_matrix_cnn1d_smote.png" width="300"/> | <img src="confusion_matrix_cnn1d_adasyn.png" width="300"/> |
 | **LSTM** | <img src="confusion_matrix_lstm_none.png" width="300"/> | <img src="confusion_matrix_lstm_smote.png" width="300"/> | <img src="confusion_matrix_lstm_adasyn.png" width="300"/> |
@@ -184,7 +184,7 @@ Komparasi prediksi yang merepresentasikan Positif Palsu (False Positives) dan Ne
 
 ## 8. Model Terbaik Untuk Agen Edge AI
 Algoritma heuristik yang memaksimalkan akurasi sambil menekan bobot memori interferensi beserta siklus training model mendeteksi arsitektur terbaik secara mutlak:
-**{best_edge_model['Base Model']} bersama balancing {best_edge_model['Balancing (EnTDA)']}**.
+**{best_edge_model['Base Model']} bersama balancing {best_edge_model['Balancing Methode']}**.
 - Skor F1: {best_edge_model['F1']:.4f}
 - Matrix Footprint: {best_edge_model['Model Weight Size (MB)']} MB
 - Backpropagation Time: {best_edge_model['Training Time']}
@@ -195,12 +195,12 @@ Dengan menggabungkan Konvolusi Spasial Deep Learning dan Gerbang Temporal LSTM m
 ---
 ## ANNEX: Matriks Riset Lengkap (Research Matrix)
 
-| Dataset | Jumlah Dataset | Balancing (EnTDA) | Positif Dataset | Negatif Dataset | Base Model | Architecture | Epoch | Training Time | Model Weight Size (MB) | Accuracy | Precision | Recall | F1 | Status |
+| Dataset | Jumlah Dataset | Balancing Methode | Positif Dataset | Negatif Dataset | Base Model | Architecture | Epoch | Training Time | Model Weight Size (MB) | Accuracy | Precision | Recall | F1 | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 """
     
     for _, r in df_matrix.iterrows():
-        row_str = f"| {r['Dataset']} | {r['Jumlah Dataset']} | {r['Balancing (EnTDA)']} | {r['Positif Dataset']} | {r['Negatif Dataset']} | {r['Base Model']} | {r['Architecture']} | {r['Epoch']} | {r['Training Time']} | {r['Model Weight Size (MB)']} | {r['Accuracy']:.4f} | {r['Precision']:.4f} | {r['Recall']:.4f} | {r['F1']:.4f} | {r['Status']} |\n"
+        row_str = f"| {r['Dataset']} | {r['Jumlah Dataset']} | {r['Balancing Methode']} | {r['Positif Dataset']} | {r['Negatif Dataset']} | {r['Base Model']} | {r['Architecture']} | {r['Epoch']} | {r['Training Time']} | {r['Model Weight Size (MB)']} | {r['Accuracy']:.4f} | {r['Precision']:.4f} | {r['Recall']:.4f} | {r['F1']:.4f} | {r['Status']} |\n"
         report_content_en += row_str
         report_content_id += row_str
     
