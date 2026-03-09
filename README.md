@@ -69,7 +69,7 @@ graph LR
 **Distribution Resampling / Augmentation**:
 *   Baseline (Unbalanced Original Set)
 *   SMOTE (Synthetic Minority Over-sampling Technique)
-*   ADASYN (EnTDA proxy methods mapping variance synthetically)
+*   ADASYN (Adaptive Synthetic Minority Over-sampling Technique)
 
 **Fully Distributed Continuous Integration**:
 *   Using GitHub Actions (`main.yml` strategy configurations), experiments are automatically run simultaneously in parallel.
