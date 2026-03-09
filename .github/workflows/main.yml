@@ -31,7 +31,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run Model: ${{ matrix.model }} | Balancing: ${{ matrix.balancing }}
+    - name: "Run Model: ${{ matrix.model }} | Balancing: ${{ matrix.balancing }}"
       run: |
         mkdir -p models/saved_models
         mkdir -p reports
