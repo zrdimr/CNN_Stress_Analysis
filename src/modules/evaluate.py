@@ -30,7 +30,7 @@ def evaluate_model(model, test_loader, classes, config, run_name):
     acc = accuracy_score(all_labels, all_preds)
     precision, recall, f1, _ = precision_recall_fscore_support(all_labels, all_preds, average='weighted')
     
-    with open(os.path.join(report_dir, "classification_report.txt"), "w") as f:
+    with open(os.path.join(report_dir, f"classification_report_{run_name}.txt"), "w") as f:
         f.write(report_str)
     
     # Save Confusion Matrix Plot
@@ -41,7 +41,7 @@ def evaluate_model(model, test_loader, classes, config, run_name):
     plt.ylabel('Actual')
     plt.xlabel('Predicted')
     plt.tight_layout()
-    cm_path = os.path.join(report_dir, 'confusion_matrix.png')
+    cm_path = os.path.join(report_dir, f'confusion_matrix_{run_name}.png')
     plt.savefig(cm_path)
     plt.close()
     

@@ -112,9 +112,9 @@ Comparison of predictions representing False Positives and False Negatives again
 
 | Base Model | None (Imbalanced) | SMOTE | ADASYN (EnTDA Proxy) |
 |---|---|---|---|
-| **CNN1D** | <img src="cnn1d_none/confusion_matrix.png" width="300"/> | <img src="cnn1d_smote/confusion_matrix.png" width="300"/> | <img src="cnn1d_adasyn/confusion_matrix.png" width="300"/> |
-| **LSTM** | <img src="lstm_none/confusion_matrix.png" width="300"/> | <img src="lstm_smote/confusion_matrix.png" width="300"/> | <img src="lstm_adasyn/confusion_matrix.png" width="300"/> |
-| **CNN+LSTM** | <img src="cnn_lstm_none/confusion_matrix.png" width="300"/> | <img src="cnn_lstm_smote/confusion_matrix.png" width="300"/> | <img src="cnn_lstm_adasyn/confusion_matrix.png" width="300"/> |
+| **CNN1D** | <img src="confusion_matrix_cnn1d_none.png" width="300"/> | <img src="confusion_matrix_cnn1d_smote.png" width="300"/> | <img src="confusion_matrix_cnn1d_adasyn.png" width="300"/> |
+| **LSTM** | <img src="confusion_matrix_lstm_none.png" width="300"/> | <img src="confusion_matrix_lstm_smote.png" width="300"/> | <img src="confusion_matrix_lstm_adasyn.png" width="300"/> |
+| **CNN+LSTM** | <img src="confusion_matrix_cnn_lstm_none.png" width="300"/> | <img src="confusion_matrix_cnn_lstm_smote.png" width="300"/> | <img src="confusion_matrix_cnn_lstm_adasyn.png" width="300"/> |
 
 
 ## 7. Major Empirical Findings
