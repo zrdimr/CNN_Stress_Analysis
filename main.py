@@ -2,6 +2,8 @@ import yaml
 import os
 import torch
 import warnings
+import argparse
+import json
 warnings.filterwarnings('ignore')
 
 from src.data.dataset_builder import build_dataloaders
@@ -10,50 +12,63 @@ from src.modules.train import train_model
 from src.modules.evaluate import evaluate_model
 from src.utils.report_generator import generate_professor_level_report
 
+def run_single_experiment(model_name, balancing, config):
+    print(f"\n=======================================================")
+    print(f"| Run: [{model_name}] | Balancing: [{balancing}] |")
+    print(f"=======================================================")
+    
+    train_loader, test_loader, classes, input_dim = build_dataloaders(config, model_name, balancing)
+    num_classes = len(classes)
+    
+    run_name = f"{model_name}_{balancing}"
+    model = get_model(model_name, input_dim, num_classes, config)
+    
+    best_model_path = train_model(model, train_loader, test_loader, config, run_name)
+    
+    model.load_state_dict(torch.load(best_model_path))
+    result_metrics = evaluate_model(model, test_loader, classes, config, run_name)
+    
+    # Save isolated results JSON for merging later in distributed CI/CD
+    os.makedirs('reports', exist_ok=True)
+    with open(f"reports/{run_name}_result.json", "w") as f:
+        json.dump(result_metrics, f)
+        
+    return result_metrics
+
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model", type=str, help="Specific model to run (e.g. cnn1d, lstm, cnn_lstm)")
+    parser.add_argument("--balancing", type=str, help="Specific balancing (e.g. none, smote, adasyn)")
+    parser.add_argument("--aggregate", action="store_true", help="Aggregate existing JSON reports into Professor Report")
+    args = parser.parse_args()
+    
     print("=== Loading ML Research Configuration ===")
     with open('configs/config.yaml', 'r') as file:
         config = yaml.safe_load(file)
         
-    balancing_strategies = config['experiments']['balancing_strategies']
-    models_to_run = config['experiments']['models']
-    
-    # Research Matrix registry
-    all_results = []
-    
-    for balancing in balancing_strategies:
-        print(f"\n=======================================================")
-        print(f"| Preparing Data with Balancing Strategy: [{balancing}] |")
-        print(f"=======================================================")
-        
-        # Build dataset for standard 1D / Fusion (assuming common dim)
-        train_loader_1d, test_loader_1d, classes, input_dim = build_dataloaders(config, "cnn1d", balancing)
-        train_loader_2d, test_loader_2d, _, _ = build_dataloaders(config, "cnn2d", balancing)
-        
-        num_classes = len(classes)
-        
-        for model_name in models_to_run:
-            run_name = f"{model_name}_{balancing}"
-            print(f"\n--- Initiating Run: {run_name} ---")
-            
-            # Select proper loader
-            current_train_loader = train_loader_2d if model_name == "cnn2d" else train_loader_1d
-            current_test_loader  = test_loader_2d if model_name == "cnn2d" else test_loader_1d
-            
-            # Init Model
-            model = get_model(model_name, input_dim, num_classes, config)
-            
-            # Train
-            best_model_path = train_model(model, current_train_loader, current_test_loader, config, run_name)
-            
-            # Evaluate using best model
-            model.load_state_dict(torch.load(best_model_path))
-            result_metrics = evaluate_model(model, current_test_loader, classes, config, run_name)
-            
-            all_results.append(result_metrics)
+    if args.aggregate:
+        print("=== Aggregating Distributed Reports ===")
+        all_results = []
+        import glob
+        for file in glob.glob("reports/*_result.json"):
+            with open(file, 'r') as f:
+                all_results.append(json.load(f))
+        generate_professor_level_report(all_results, config)
+        return
 
-    print("\n=== Generating Master Research Report ===")
-    generate_professor_level_report(all_results, config)
+    if args.model and args.balancing:
+        # Run isolated target
+        run_single_experiment(args.model, args.balancing, config)
+    else:
+        # Run sequential loop locally
+        all_results = []
+        for balancing in config['experiments']['balancing_strategies']:
+            for model_name in config['experiments']['models']:
+                res = run_single_experiment(model_name, balancing, config)
+                all_results.append(res)
+        
+        print("\n=== Generating Master Research Report ===")
+        generate_professor_level_report(all_results, config)
     print("=== Pipeline Complete ===")
 
 if __name__ == "__main__":

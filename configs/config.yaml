@@ -11,24 +11,26 @@ experiments:
     - "adasyn"
   models:
     - "cnn1d"
-    - "cnn2d"
-    - "fusion"
+    - "lstm"
+    - "cnn_lstm"
 
 model_params:
   cnn1d:
     hidden_channels: [64, 128]
     kernel_size: 3
     dropout: 0.3
-  cnn2d:
-    hidden_channels: [32, 64]
-    kernel_size: 3
+  lstm:
+    hidden_size: 64
+    num_layers: 2
     dropout: 0.3
-  fusion:
-    hidden_channels: [64, 128]
+  cnn_lstm:
+    cnn_channels: [32, 64]
+    lstm_hidden: 64
+    dropout: 0.3
 
 training:
   batch_size: 256
   learning_rate: 0.001
-  epochs: 5  # Kept small for fast iteration; user can increase
+  epochs: 5
   save_dir: "models/saved_models"
   reports_dir: "reports"

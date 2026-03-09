@@ -18,15 +18,8 @@ class StressDataset(Dataset):
     def __getitem__(self, idx):
         x_val = self.X[idx]
         
-        # Format input based on CNN requirements
-        if self.model_type == "cnn2d":
-            # For 34 features, we pad with 2 zeros to get 36, then reshape to 1 x 6 x 6
-            if x_val.shape[0] < 36:
-                pad = torch.zeros(36 - x_val.shape[0])
-                x_val = torch.cat([x_val, pad])
-            x_val = x_val[:36].view(1, 6, 6)
-        elif self.model_type in ["cnn1d", "fusion"]:
-            # (1, sequence_length)
+        # Format input for all sequence models (Batch, 1, Seq)
+        if self.model_type in ["cnn1d", "lstm", "cnn_lstm"]:
             x_val = x_val.unsqueeze(0)
             
         return x_val, self.y[idx]

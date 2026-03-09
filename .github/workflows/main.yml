@@ -1,15 +1,18 @@
-name: CNN Stress Analysis Pipeline
+name: Parallel CNN+LSTM Research
 
 on:
   push:
     branches: [ "main", "master" ]
-  pull_request:
-    branches: [ "main", "master" ]
   workflow_dispatch:
 
 jobs:
-  run-research-pipeline:
+  run-research-matrix:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        model: [cnn1d, lstm, cnn_lstm]
+        balancing: [none, smote, adasyn]
     
     steps:
     - name: Checkout repository
@@ -28,26 +31,57 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run Orchestrator Pipeline
+    - name: Run Model: ${{ matrix.model }} | Balancing: ${{ matrix.balancing }}
       run: |
-        # Ensure target directories exist before execution
         mkdir -p models/saved_models
         mkdir -p reports
-        python main.py
-        
-    - name: Upload Research Reports
+        python main.py --model ${{ matrix.model }} --balancing ${{ matrix.balancing }}
+
+    - name: Upload Run Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: research-reports
+        name: isolated-result-${{ matrix.model }}-${{ matrix.balancing }}
         path: |
           reports/
-          classification_report.txt
-          confusion_matrix.png
+          models/saved_models/${{ matrix.model }}_${{ matrix.balancing }}/
       continue-on-error: true
 
-    - name: Upload Saved Models
+  aggregate-reports:
+    needs: run-research-matrix
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+
+    - name: Download all isolated results
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts_download
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Merge Artifacts into Reports folder
+      run: |
+        mkdir -p reports
+        # Artifacts download as artifacts_download/isolated-result-MODEL-BALANCING/reports/...
+        find artifacts_download -type f -name "*_result.json" -exec cp {} reports/ \;
+        find artifacts_download -type f -name "*.png" -exec cp {} reports/ \;
+        find artifacts_download -type f -name "*.txt" -exec cp {} reports/ \;
+
+    - name: Generate Professor Report
+      run: python main.py --aggregate
+        
+    - name: Upload Final Consolidated Report
       uses: actions/upload-artifact@v4
       with:
-        name: trained-models
-        path: models/saved_models/
-      continue-on-error: true
+        name: FINAL_RESEARCH_OUTPUT
+        path: reports/
